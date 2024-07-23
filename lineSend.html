@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LIFF App</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script>
+        function initializeLiff(myLiffId) {
+            liff.init({
+                liffId: myLiffId
+            }).then(() => {
+                if (!liff.isLoggedIn()) {
+                    liff.login();
+                }
+            }).catch((err) => {
+                console.log('LIFF Initialization failed ', err);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            initializeLiff("2005581283-Lxej773r"); // ここにLIFFアプリのIDを入力
+        });
+
+        function sendMessage() {
+            const message = document.getElementById('message').value;
+
+            liff.sendMessages([{
+                'type': 'text',
+                'text': message
+            }]).then(() => {
+                alert('メッセージが送信されました');
+            }).catch((err) => {
+                console.error('Error sending message: ', err);
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>LINE公式アカウントへの投稿</h1>
+    <input type="text" id="message" placeholder="メッセージを入力">
+    <button onclick="sendMessage()">送信</button>
+</body>
+</html>
