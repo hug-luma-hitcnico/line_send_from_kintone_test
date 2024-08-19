@@ -2,36 +2,64 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>LINE Chat</title>
+    <title>管理者用LINEログイン</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 <body>
-    <div id="chatArea"></div>
-    <textarea id="messageInput" placeholder="メッセージを入力"></textarea>
-    <button onclick="sendMessage()">送信</button>
+    <div id="loginArea">
+        <button id="loginButton">LINEでログイン</button>
+    </div>
+    <div id="chatArea" style="display:none;">
+        <textarea id="messageInput" placeholder="メッセージを入力"></textarea>
+        <button onclick="sendMessage()">メッセージを送信</button>
+    </div>
 
     <script>
-        // LIFFアプリの初期化
-        liff.init({ liffId: '2006038229-B2pgmA2n' }).then(() => {
-            if (!liff.isLoggedIn()) {
-                liff.login();
-            } else {
-                loadChat();
-            }
-        });
+        document.getElementById('loginButton').onclick = function() {
+            liff.init({ liffId: '2006038229-B2pgmA2n' })
+                .then(() => {
+                    if (!liff.isLoggedIn()) {
+                        liff.login();
+                    } else {
+                        checkAdminStatus();
+                    }
+                }).catch(err => {
+                    console.error('LIFF初期化エラー', err);
+                });
+        };
 
-        function loadChat() {
-            // チャット履歴をロードするための処理
+        function checkAdminStatus() {
+            liff.getProfile().then(profile => {
+                const userId = profile.userId;
+                // ここでLINE公式アカウントの管理者かどうかを確認
+                if (isAdmin(userId)) {
+                    document.getElementById('loginArea').style.display = 'none';
+                    document.getElementById('chatArea').style.display = 'block';
+                } else {
+                    alert("管理者権限がありません。");
+                }
+            }).catch(err => {
+                console.error('プロフィール取得エラー', err);
+            });
+        }
+
+        function isAdmin(userId) {
+            // 管理者のLINE IDを事前に設定し、照合
+            const adminIds = ['hitc.nico@hitcnico.com', 'hanako.inoue52@gmail.com']; // 管理者LINE IDのリスト
+            return adminIds.includes(userId);
         }
 
         function sendMessage() {
             const message = document.getElementById('messageInput').value;
             if (message) {
-                liff.sendMessages([{ type: 'text', text: message }])
-                    .then(() => {
-                        alert('メッセージが送信されました');
-                    })
-                    .catch(err => console.error('送信エラー', err));
+                liff.sendMessages([{
+                    type: 'text',
+                    text: message
+                }]).then(() => {
+                    alert('メッセージが送信されました');
+                }).catch(err => {
+                    console.error('メッセージ送信エラー', err);
+                });
             }
         }
     </script>
