@@ -2,12 +2,12 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>管理者用LINEログイン</title>
+    <title>ビジネスアカウントログイン</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 <body>
     <div id="loginArea">
-        <button id="loginButton">LINEでログイン</button>
+        <button id="loginButton">LINEビジネスアカウントでログイン</button>
     </div>
     <div id="chatArea" style="display:none;">
         <textarea id="messageInput" placeholder="メッセージを入力"></textarea>
@@ -16,22 +16,26 @@
 
     <script>
         document.getElementById('loginButton').onclick = function() {
-            liff.init({ liffId: '2006038229-B2pgmA2n' })
-                .then(() => {
-                    if (!liff.isLoggedIn()) {
-                        liff.login();
-                    } else {
-                        checkAdminStatus();
-                    }
-                }).catch(err => {
-                    console.error('LIFF初期化エラー', err);
-                });
+            liff.init({
+                liffId: '2006038229-B2pgmA2n'  // LIFF IDを指定
+            }).then(() => {
+                if (!liff.isLoggedIn()) {
+                    // LINEビジネスアカウントログインを促す
+                    liff.login({
+                        redirectUri: 'https://yourdomain.com/callback' // コールバックURLを指定
+                    });
+                } else {
+                    checkAdminStatus();  // ログイン済みなら管理者チェック
+                }
+            }).catch(err => {
+                console.error('LIFF初期化エラー', err);
+            });
         };
 
         function checkAdminStatus() {
             liff.getProfile().then(profile => {
                 const userId = profile.userId;
-                // ここでLINE公式アカウントの管理者かどうかを確認
+                // ビジネスアカウント管理者かどうかを確認
                 if (isAdmin(userId)) {
                     document.getElementById('loginArea').style.display = 'none';
                     document.getElementById('chatArea').style.display = 'block';
@@ -44,8 +48,8 @@
         }
 
         function isAdmin(userId) {
-            // 管理者のLINE IDを事前に設定し、照合
-            const adminIds = ['Uf76722dcc44c14a86e7f57c299032eea', 'hanako.inoue52@gmail.com']; // 管理者LINE IDのリスト
+            // 管理者のLINEビジネスアカウントIDを事前に設定し、照合
+            const adminIds = ['hitc.nico@hitcnico.com', 'hanako.inoue52@gmail.com']; // 管理者LINEビジネスアカウントIDリスト
             return adminIds.includes(userId);
         }
 
