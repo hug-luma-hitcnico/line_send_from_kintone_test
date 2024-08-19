@@ -22,7 +22,7 @@
                 if (!liff.isLoggedIn()) {
                     // LINEビジネスアカウントログインを促す
                     liff.login({
-                        redirectUri: 'https://yourdomain.com/callback' // コールバックURLを指定
+                        redirectUri: 'https://netlify.hug-luma.design/callback.html' // コールバックURLを指定
                     });
                 } else {
                     checkAdminStatus();  // ログイン済みなら管理者チェック
