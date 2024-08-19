@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>LINE 管理者ユーザーID取得</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+    <button id="getUserId">ユーザーID取得</button>
+    <p id="result"></p>
+
+    <script>
+        document.getElementById('getUserId').onclick = function() {
+            liff.init({ liffId: '2006038229-B2pgmA2n' }).then(() => {
+                if (!liff.isLoggedIn()) {
+                    liff.login();
+                } else {
+                    liff.getProfile().then(profile => {
+                        document.getElementById('result').textContent = `ユーザーID: ${profile.userId}`;
+                    }).catch(err => {
+                        console.error('エラー', err);
+                    });
+                }
+            });
+        };
+    </script>
+</body>
+</html>
