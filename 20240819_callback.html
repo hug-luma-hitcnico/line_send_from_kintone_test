@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>ログイン完了</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+    <div id="content">
+        <h1>ログイン完了</h1>
+        <p id="message">ユーザー情報を取得中...</p>
+    </div>
+
+    <script>
+        // LIFFアプリ初期化
+        liff.init({ liffId: '2006038229-B2pgmA2n' }).then(() => {
+            if (liff.isLoggedIn()) {
+                // ユーザーのプロファイル情報を取得
+                liff.getProfile().then(profile => {
+                    const userId = profile.userId;
+                    const displayName = profile.displayName;
+                    document.getElementById('message').textContent = `ようこそ、${displayName}さん`;
+
+                    // 必要ならここでアクセストークンを利用してサーバー側で処理
+                    const accessToken = liff.getAccessToken();
+                    // アクセストークンやユーザーIDをサーバーへ送信するなどの処理
+                }).catch(err => {
+                    console.error('プロファイル情報の取得に失敗しました', err);
+                    document.getElementById('message').textContent = 'プロファイル情報の取得に失敗しました。';
+                });
+            } else {
+                liff.login(); // ログインしていない場合はログインを促す
+            }
+        }).catch(err => {
+            console.error('LIFFの初期化に失敗しました', err);
+        });
+    </script>
+</body>
+</html>
